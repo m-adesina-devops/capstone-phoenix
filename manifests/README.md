@@ -26,3 +26,4 @@ Produce (raw YAML, a Helm chart, or kustomize overlays — your call):
 - [ ] ingress controller, cert-manager + ClusterIssuer, metrics-server, Argo CD
 
 Every box you tick must have matching evidence in `docs/EVIDENCE/`.
+# GitOps demo - Sun Jun 28 18:34:03 WAT 2026
