@@ -1,0 +1,10 @@
+[control_plane]
+13.40.177.222 ansible_user=ubuntu
+
+[workers]
+3.8.232.68 ansible_user=ubuntu
+18.134.159.222 ansible_user=ubuntu
+
+[all:vars]
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

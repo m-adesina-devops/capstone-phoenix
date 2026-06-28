@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration
+  namespace: taskapp
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+        - name: migration
+          image: ghcr.io/ts-a-devops/taskapp-backend:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              export DATABASE_URL=postgresql://taskapp:taskapp123@postgres-service:5432/taskapp
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 10
+              echo "Running migrations..."
+              python -c "from app import db; db.create_all()"
+              echo "Migrations completed successfully!"
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://taskapp:taskapp123@postgres-service:5432/taskapp"
+      restartPolicy: Never

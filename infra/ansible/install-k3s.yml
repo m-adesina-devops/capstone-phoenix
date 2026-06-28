@@ -1,0 +1,34 @@
+---
+- name: Install k3s on control plane
+  hosts: control_plane
+  become: yes
+  tasks:
+    - name: Install k3s server
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Get node token
+      shell: cat /var/lib/rancher/k3s/server/node-token
+      register: token
+      changed_when: false
+
+    - name: Copy token to local
+      fetch:
+        src: /var/lib/rancher/k3s/server/node-token
+        dest: /tmp/node-token
+        flat: yes
+
+- name: Install k3s on workers
+  hosts: workers
+  become: yes
+  tasks:
+    - name: Get token from control plane
+      set_fact:
+        token: "{{ lookup('file', '/tmp/node-token') }}"
+      delegate_to: localhost
+
+    - name: Install k3s agent
+      shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars[groups['control_plane'][0]].ansible_default_ipv4.address }}:6443 K3S_TOKEN={{ token }} sh -
+      args:
+        creates: /usr/local/bin/k3s
